@@ -9,7 +9,7 @@ USER ubuntu
 WORKDIR /home/ubuntu
 
 RUN curl -fsSL https://claude.ai/install.sh | bash
-RUN echo 'export PATH="$HOME/.local/bin:$PATH"'
+RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> .bashrc
 RUN rm -rf /home/ubuntu/.claude.json
 
 RUN mkdir -p /home/ubuntu/.claude && \
