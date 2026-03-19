@@ -1,10 +1,10 @@
 FROM ubuntu:24.04
 
+# add git or other tools based on your needs
 RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# RUN useradd -u 1000 claude
 USER ubuntu
 WORKDIR /home/ubuntu
 
