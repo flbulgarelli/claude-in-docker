@@ -1,0 +1,11 @@
+services:
+  claude:
+    build: .
+    image: claude:latest
+    volumes:
+      - ~/.claude:/home/ubuntu/.claude
+      - ~/.claude.json:/home/ubuntu/.claude.json
+      - ${PROJECT}:/home/ubuntu/${PROJECT_NAME:-project}
+    working_dir: /home/ubuntu/${PROJECT_NAME:-project}
+    stdin_open: true
+    tty: true
