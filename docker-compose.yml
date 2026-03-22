@@ -6,8 +6,8 @@ services:
         - EXTRA_PACKAGES=${EXTRA_PACKAGES}
     image: claude:latest
     volumes:
-      - ~/.claude:/home/ubuntu/.claude
-      - ~/.claude.json:/home/ubuntu/.claude.json
+      - ${CLAUDE_DIR:-~/.claude}:/home/ubuntu/.claude
+      - ${CLAUDE_JSON:-~/.claude.json}:/home/ubuntu/.claude.json
       - ${PROJECT}:/home/ubuntu/${PROJECT_NAME:-project}
     working_dir: /home/ubuntu/${PROJECT_NAME:-project}
     stdin_open: true
