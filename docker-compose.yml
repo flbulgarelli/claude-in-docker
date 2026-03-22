@@ -1,6 +1,9 @@
 services:
   claude:
-    build: .
+    build:
+      context: .
+      args:
+        - EXTRA_PACKAGES=${EXTRA_PACKAGES}
     image: claude:latest
     volumes:
       - ~/.claude:/home/ubuntu/.claude

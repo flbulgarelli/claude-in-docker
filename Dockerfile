@@ -1,9 +1,10 @@
 FROM ubuntu:24.04
 
+ARG EXTRA_PACKAGES=""
+
 # add git or other tools based on your needs
 RUN apt-get update && apt-get install -y \
-    curl \
-    git \
+    curl ${EXTRA_PACKAGES} \
     && rm -rf /var/lib/apt/lists/*
 
 USER ubuntu
