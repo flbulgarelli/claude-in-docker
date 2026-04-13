@@ -2,24 +2,54 @@
 
 ## Run
 
-This will run `claude` executable using credentials and settings in `~/.claude` and `~/.claude.json`
-and load the project.
+Use the `claude-in-docker` script to run `claude` inside Docker. It uses the credentials and settings from `~/.claude` and `~/.claude.json` and mounts the specified project directory into the container.
+
+To make the script available from anywhere, create a symlink in your PATH:
 
 ```bash
-PROJECT=my/project/path docker compose run --rm claude
+ln -s /path/to/claude-in-docker/claude-in-docker /usr/local/bin/claude-in-docker
 ```
 
-The project name is `project` by default. You can override it like this:
+Then you can run it from any project root:
 
 ```bash
-PROJECT_NAME=my-project PROJECT=my/project/path docker compose run --rm claude
+cd /path/to/my/project
+claude-in-docker --project .
 ```
 
-Alternatively, use a custom env file:
+Or with a full path:
 
 ```bash
-docker compose --env-file .my-project.env run --rm claude
+claude-in-docker --project /path/to/my/project
 ```
+
+The project is mounted at `/home/ubuntu/project` inside the container. You can override the name with the `PROJECT_NAME` environment variable:
+
+```bash
+PROJECT_NAME=my-project claude-in-docker --project .
+```
+
+### Flags
+
+| Flag | Description |
+|---|---|
+| `--project <path>` | Path to the project directory to mount (required) |
+| `--build` | Rebuild the Docker image before running |
+| `--env-file <path>` | Path to an env file to pass to Docker Compose |
+
+## Hiding files from Claude
+
+Create a `.claude-in-docker-ignore` file at the root of your project to specify files that should be hidden from Claude. Each line is a path or glob pattern relative to the project root. Lines starting with `#` are treated as comments.
+
+```gitignore
+# Hide all .env files
+**/.env
+
+# Hide a specific secrets file
+config/secrets.yml
+```
+
+Files matched by the ignore file are replaced with an empty `/dev/null` mount inside the container, so Claude cannot read their contents.
 
 ## Using multiple accounts
 
@@ -49,6 +79,6 @@ And create an additional `.other-project.env` env file.
 Now, you'll be able to start multiple projects with different accounts:
 
 ```bash
-docker compose --env-file .my-project.env run --rm claude
-docker compose --env-file .other-project.env run --rm claude
+./claude-in-docker --env-file .my-project.env --project /path/to/my-project
+./claude-in-docker --env-file .other-project.env --project /path/to/other-project
 ```
