@@ -55,7 +55,11 @@ if [ -n "$project" ]; then
           printf '    volumes:\n' >> "$override_file"
           has_volumes=1
         fi
-        printf '      - /dev/null:%s\n' "/home/ubuntu/\${PROJECT_NAME:-project}$rel" >> "$override_file"
+        if [ -d "$file" ]; then
+          printf '      - type: tmpfs\n        target: %s\n' "/home/ubuntu/\${PROJECT_NAME:-project}$rel" >> "$override_file"
+        else
+          printf '      - /dev/null:%s\n' "/home/ubuntu/\${PROJECT_NAME:-project}$rel" >> "$override_file"
+        fi
       done
     done < "$ignore_file"
   fi
