@@ -54,6 +54,12 @@ if [ -n "$project" ]; then
   if [ -f "$ignore_file" ]; then
     while IFS= read -r pattern || [ -n "$pattern" ]; do
       case "$pattern" in '#'*|'') continue ;; esac  # skip comments and blank lines
+      case "$pattern" in
+        *'**'*)
+          echo "Warning: '$pattern' uses ** which is not supported — skipping. Use * for single-level matching (e.g. apps/*/.env)." >&2
+          continue
+          ;;
+      esac
       for file in "$project"/$pattern; do
         [ -e "$file" ] || continue  # skip if glob matched nothing
         rel="${file#$project}"
@@ -71,7 +77,7 @@ if [ -n "$project" ]; then
   fi
   if [ "$has_volumes" -eq 0 ]; then
     printf '    volumes: []\n' >> "$override_file"
-    echo "No files found to ignore for project $project. Create a .claude-in-docker-ignore file in the project root directory to specify files to ignore."
+    echo "Warning: No files found to ignore for project $project. Create a .claude-in-docker-ignore file in the project root directory to specify files to ignore."
   fi
 
   # --- Run claude ---

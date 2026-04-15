@@ -42,14 +42,33 @@ PROJECT_NAME=my-project claude-in-docker --project .
 Create a `.claude-in-docker-ignore` file at the root of your project to specify files that should be hidden from Claude. Each line is a path or glob pattern relative to the project root. Lines starting with `#` are treated as comments.
 
 ```gitignore
-# Hide all .env files
-**/.env
+# Hide a specific file at the project root
+.env
 
-# Hide a specific secrets file
-config/secrets.yml
+# Hide files matching a glob in a specific directory
+config/*.yml
+
+# Hide an entire directory
+secrets/
+
+# Hide .env one level deep inside any subdirectory
+apps/*/.env
 ```
 
-Files matched by the ignore file are replaced with an empty `/dev/null` mount inside the container, so Claude cannot read their contents.
+Files matched by the ignore file are replaced with an empty mount inside the container — regular files with `/dev/null`, directories with an empty `tmpfs` — so Claude cannot read their contents.
+
+### Supported pattern syntax
+
+| Pattern | Meaning |
+|---|---|
+| `.env` | Exact filename in the project root |
+| `*.secret` | Any file matching the glob in the project root |
+| `config/secrets.yml` | Exact path relative to the project root |
+| `config/*.yml` | Glob within a specific subdirectory |
+| `secrets/` | An entire directory |
+| `apps/*/.env` | `.env` one level deep inside `apps/` |
+
+> **Note:** `**` (recursive glob) is not supported and will be skipped with a warning. Use `*` for single-level matching, or list paths explicitly for multiple depths (e.g. `apps/*/.env`, `apps/*/*/.env`).
 
 ## Using multiple accounts
 
