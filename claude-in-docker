@@ -80,8 +80,10 @@ if [ -n "$project" ]; then
     echo "Warning: No files found to ignore for project $project. Create a .claude-in-docker-ignore file in the project root directory to specify files to ignore."
   fi
 
-  # --- Run claude ---
+  # --- Run claude; tear down the sidecar when the user exits ---
   PROJECT="$project" docker compose $env_file -f $script_dir/claude-compose.yml -f "$override_file" --project-directory "$script_dir" run --rm $build claude "$@"
+  PROJECT="$project" docker compose $env_file -f $script_dir/claude-compose.yml -f "$override_file" --project-directory "$script_dir" down
+  echo "bye!"
 else
   echo "No project specified. Exiting."
 fi

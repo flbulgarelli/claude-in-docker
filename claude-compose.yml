@@ -13,19 +13,18 @@ services:
     working_dir: /home/ubuntu/${PROJECT_NAME:-project}
     stdin_open: true
     tty: true
+    cap_add:
+      - NET_ADMIN
     environment:
-      - HTTP_PROXY=http://claude-in-docker-sidecar:8080
-      - HTTPS_PROXY=http://claude-in-docker-sidecar:8080
       - NODE_EXTRA_CA_CERTS=/home/ubuntu/.mitmproxy/mitmproxy-ca-cert.pem
     depends_on:
       claude-in-docker-sidecar:
         condition: service_healthy
-    networks:
-      - claude-net
+    network_mode: "service:claude-in-docker-sidecar"
 
   claude-in-docker-sidecar:
     image: mitmproxy/mitmproxy
-    command: mitmdump --listen-host 0.0.0.0 --listen-port 8080
+    command: mitmdump --mode transparent --showhost --listen-host 0.0.0.0 --listen-port 8080
     volumes:
       - mitmproxy-data:/home/mitmproxy/.mitmproxy
     healthcheck:
@@ -34,13 +33,9 @@ services:
       timeout: 5s
       retries: 10
     networks:
-      - claude-net
       - internet-net
 
 networks:
-  claude-net:
-    # internal: true
-    internal: false # TODO: change back after finishing work
   internet-net:
     internal: false
 

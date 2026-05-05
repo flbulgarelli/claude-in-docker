@@ -4,7 +4,7 @@ ARG EXTRA_PACKAGES=""
 
 # add git or other tools based on your needs
 RUN apt-get update && apt-get install -y \
-    curl ${EXTRA_PACKAGES} \
+    curl iptables ca-certificates ${EXTRA_PACKAGES} \
     && rm -rf /var/lib/apt/lists/*
 
 USER ubuntu
@@ -19,4 +19,8 @@ RUN mkdir -p /home/ubuntu/.claude && \
 
 VOLUME ["/home/ubuntu/.claude"]
 
-CMD [ "/home/ubuntu/.local/bin/claude" ]
+USER root
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
